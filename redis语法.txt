@@ -1,0 +1,275 @@
+1）string 字符串 一个键最多存储512兆
+  语法：set key value 
+  注意如果key存在，同名会产生覆盖
+  
+  setex：设置建的过期时间，以秒为单位
+  语法：setex key second value  是原子操作 ==set key value  expire key second
+  
+  ince:对key中的数字加一
+  
+  语法：incr key
+  key如果不存在，则会先初始化为0，在进行incr操作，如果key不是数字，则会报错
+  
+  incrby key increment
+  incrbyfloat key increment
+  
+  decr  key//减一
+  decrby key decrement
+  
+  append key value//向字符串追加，若字符串不存在，新则建
+  
+  
+2）hash类型
+ 
+	命令：
+		hset：设置值，或新建值
+		
+		语法：hset key field value；如果存在，则覆盖
+		
+		hget： hget key field   //如果field不存在返回nil
+		
+		hsetnx： filed不存在时设置
+		
+		hmset： 同时将多个字段和值，设置到hash表key中
+		
+		hmset key field key field key //若谋field 存在，覆盖
+		
+		hmget key field field。。。
+		
+		hgetall key//返回所有域和值
+		
+		hkey 返回哈希表中所有域的biao
+		语法：hkeys key
+		
+		hvalues key
+		
+		hexists key field //监测表中域名是否存在
+		
+		hlen key 返回表的长度
+		
+		hincrby key field increment//增加域的值
+		
+		hincrbyfloat key field increment  //按浮点数增加
+		
+		
+3）key相关命令
+	1、keys 返回所有符合给定模式的key
+		语法：keys  pattern
+		
+		*：任意字符
+		？：匹配任意一个字符
+		[]：匹配括号中的一个
+		\：转义
+	2、exists key//检测key是否存在
+	
+	
+	3、type key//返回key所存储的类型
+	
+	4、expire key second //设置key的过期时间，如果key已存在过期时间， 在通过expire设置的时候会覆盖之前的过期时间
+							//ttl
+	5、expireat key timestamp //需要在指定时间戳过期
+	
+	6、pexpire key millisecond //毫秒  //pttl
+	
+	7、pexpireat key timestamp  //毫秒
+	
+	8、ttl  key //以秒为单位返回key的过期时间，如果key没有设置过期时间返回-1，如果key不存在返回-1
+	
+	9、pttl //以毫秒为单位。。。。。
+	
+	10、persist key  //将带有过期时间的key设置为永久的key
+	
+	11、del key //删除key，返回删除key的个数
+	
+	12、randomkey //随机返回一个数据库中的key
+	
+	13、rename key newkey //重命名一个键，如果名称没有发生改变，会报错，key不存在，会报错，如果新名字和已有的键重复，会删除已有的键，然后执行重命名
+		
+	14、renamenx  key newkey//新名字必须不存在
+	
+	15、dump key //序列化给定的key，返回序列化之后的值
+	
+	16、restore  key ttl value//反序列化
+	
+	17、move key dbid  //将当前数据库中的移动到指定的数据库、当目标数据库已经存在要移动的key，则移动失败
+
+		object， scan， sort，  migrate
+		
+		
+3）list列表类型
+	
+	1、lpush key value value 。。。 //向列表的左端添加元素，若可以不存在，则创建
+
+	2、rpush  //向列表右端添加元素
+	
+	3、lpushx key value value   ； rpush 
+
+	3、lpop key  从左端弹出元素
+
+	4、llen key //列表长度
+	
+	5、lrange key  start stop
+	
+	6、lrem key count value  
+		count > 0：从列表的头部开始，一处与value相等的元素，移除count个
+		count < 0：从列表的尾部相投开始搜索，一处与value相等的元素，移除count个
+		count = 0：一处列表中所有与value相等的值
+
+	7、lindex key index //返回列表中指定索引元素的值
+	
+	8、lset key index value //将可以中索引为index的元素的值设置为value
+	
+	9、ltrim key start stop //指保留列表的片段，若范围中没有元素，或范围错误，则清空
+	
+	10、linsert key before|after pivot value //向列表插入元素,如果列表中没有pivot，则什么都不做
+	
+	11、rpoplpush source destnation //将元素从一个列表转到另一个列表，若元列表不存在，则返回nil
+	
+	12、blpop //lpop的阻塞版本
+		blpop key [key...] timeout //等待timeout时间，若期间有可弹出元素，则弹出元素timeout = 0表示无限期等待
+	
+
+set集合元素：无序集合
+	1、sadd key member [...]向集合添加元素,元素不可重复
+	
+	2、smembers key //返回集合元素，若集合不存在，返回0
+	
+	3、sismember key member //检测可以中是否有member
+	
+	4、srem key member [member...] //删除集合元素，返回删除元素的个数，若元素不存在，返回0
+
+	5、spop key //删除并返回集合中的一个随机的元素
+	
+	6、srandmember key  count //随机返回集合中的元素	
+		注意：count为整数，而且小于集合中的元素，返回的一个包含随机元素的集合数组；count数大于集合中元素的个数，这时候返回整个集合
+			  count为负数，返回一个数组，数组中的成员可能重复出现，数组的长度是count的绝对值
+	
+	7、sdiff   key key 。。。//返回集合间的差集，先算前两个，再算第三个，一次类推，从前往后算起
+	
+	8、sinter  key key。。。//返回集合间的交集，算法规则跟sdiff一样
+	
+	9、sunion key key。。。//返回集合间的并集
+	
+	10、scard key //返回集合中的元素个数
+	
+	11、sdiffstore destination key key 。。。  //将结果保存到指定集合中，若指定集合已存在，会全部覆盖
+	
+	12、sinterstore destination key key 。。。 //将交际的结果保存在指定集合中
+	
+	13、sunionstore destination key key 。。。 //将并集的结果保存在指定集合中
+	
+	14、smove source destination member    //将元素从一个集合移动到另一个集合，原子操作跟rpoplpush很像
+	
+
+zset（sorted set） 有序集合,分数是可以相同的，分数相同时按照member排序
+
+	1、zzadd key score member [score member] ... //将元素及其分数添加到集合中
+	
+	2、zscore key member   //获取指定元素的分数
+	
+	3、zrange key start stop [withscores] //按照元素分数从小到打的顺序返回指定索引start到stop之间所有元素（包含两段）
+	
+	4、zrevrange key start stop [withscores] 按照分数从大到小单位顺序
+	
+	5、zrangebyscore key min [(]max [withscores] [limit offset count] 获得指定分数范围内的元素，按照分数从小到大的顺序，返回的时分数在指定的min到max之间的元素
+		可以通过括号不包括端点
+	6、zrevrangebyscore key max min [withscore] [limit offset count]
+		//获得指定范围内的元素，按照元素分数从打到校的顺序返回min和max之间的元素
+	
+	7、zincrby key increment member  //操作某个元素的分数，返回操作之后的分数
+
+	8、zcard key  //获得集合中元素的数量
+	
+	9、zcount key min max 获得指定分数内的元素的数量
+	
+	10、zrem key member 。。。 //删除一个或多个元素，返回删除元素的个数
+	
+	11、zremrangebyrank key start stop//按照排名范围删除元素，按照分数从小到大的顺序删除所制定的排名范围内的所有元素
+
+	12、zremrangebyscore key min max  //按照分数范围删除元素
+	
+	13、zrank key member //获得指定元素的排名，根据分数从小到大的顺序
+	
+	14、zrevrank key member //获得指定元素的排名，根据分数从大到小的顺序
+	
+	15、zinterstore destination numbers key。。。  【weights  weight weight。。。】 【aggregate sum | min | max】//计算有序集合的交集，并将结果保存起来
+		
+	16、zuniostore destination numbers key key 。。。【weights  weight weight。。。】 【aggregate sum | min | max】// 计算并集
+	
+	17、
+		
+redis长的事务
+	1、muti 开启事务，事务块中的多条语句会按照顺序返给队列当中，最后有exec命令来执行
+	
+	2. exec 执行事务块中的命令
+	
+	3、watch 监视一个或者多个key，如果在执行事务之前，这个key如果被其他命令改动，事务就被打断了
+	
+		unwatch 取消watch命令对所有key的监控
+	
+	4、discard 取消事务
+	
+	5、事务中的错误处理
+		1）语法错误，命令不存在，或参数错误，如果有语法错误，redis接到exec后直接返回错误，里面的正确命令也不会被执行		
+		2）运行时错误，在运行命令的时候出现的问题
+
+redis连接相关
+	1、ping：测试和服务器之间的连接是否有下，如果如果服务器链接有效，则返回pong
+	
+	2、echo：打印一个特定信息
+	
+	3、quit：请求服务器关闭与当前客户端的连接
+	
+	4、shutdown：关闭服务器和客户端
+	
+	5、auth：指定redis的身份验证，redis配置文件中requirepass选项的值
+		config set requirepass password  //设置密码，登陆后通过auth命令进行验证
+		连接的时候可通过-a pwd解锁 ./redis-cli -a pwd
+		
+	6、select 选择数据库
+		
+redis 生存时间
+
+	expire/expireat
+	pexpireat/pexpire
+	persist
+	ttl
+	pttl
+	
+	注意：使用set，getset命令也会清除过期时间
+	
+redis排序相关
+	sort
+	1）按照简直从小到大或从大到小的顺序排序
+	sort key  //对数值小到大排序
+	sort key desc //对数字大到小排序
+	sort key alpha //按字符从小到大排序
+	
+	2）使用limit限制返回结果
+	sort key limit 0 5  [desc]//返回[降序]排序后从0开始的前五条结果
+	
+	3）根据外部key的权重进行排序
+	sort uid by ... //按照键值中某个项排序
+	
+	4）根据排序结果去除相应简直
+	sort key get 。。。
+	
+	注意：sort命令的时间复杂度（n+mlogm），n表示要排序的列表或者集合中的元素的个数，m表示要返回元素的个数
+	 1）尽可能的减少待排序中键的数量（使n尽可能小）
+	 2）使用limit参数限制获取元素的个数（使m尽可能小）
+	 3）如果要排序的数据量比较大，尽可能通过store缓存结果
+	
+	
+redis 发布订阅模式
+
+publish/subscribe
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
